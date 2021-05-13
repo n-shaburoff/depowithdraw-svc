@@ -7,12 +7,18 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
+	"github.com/ubiq/go-ubiq/core/types"
+	"math/big"
+)
+
+var (
+	ErrNoKey = errors.New("wallet doesn't have requested key")
 )
 
 type Wallet struct {
-	hd    bool
+	hd    	bool
 	master  *Deriver
-	keys  map[common.Address]ecdsa.PrivateKey
+	keys  	map[common.Address]ecdsa.PrivateKey
 }
 
 func NewHDWallet(hdPrivate string, n uint64) (*Wallet, error) {
@@ -77,4 +83,23 @@ func (wallet *Wallet) Addresses(ctx context.Context) (result []common.Address) {
 		result = append(result, addr)
 	}
 	return result
+}
+
+func (wallet *Wallet) SignTx(address common.Address, tx *types.Transaction, chainID *big.Int,
+	) (*types.Transaction, error) {
+	key, ok := wallet.keys[address]
+	if !ok {
+		return nil, ErrNoKey
+	}
+	return SignTxWithPrivate(&key, tx, chainID)
+}
+
+func SignTxWithPrivate(key *ecdsa.PrivateKey, tx *types.Transaction, chainID *big.Int,
+	) (*types.Transaction, error) {
+	return types.SignTx(tx, types.NewEIP155Signer(chainID), key)
+}
+
+func (wallet *Wallet) HasAddress(address common.Address) bool {
+	_, ok := wallet.keys[address]
+	return ok
 }

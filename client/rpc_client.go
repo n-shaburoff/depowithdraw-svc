@@ -6,9 +6,9 @@ type RpcClient struct {
 	endpoint	string
 }
 
-func NewRpcClient(enpoint string) *RpcClient {
+func NewRpcClient(endpoint string) *RpcClient {
 	return &RpcClient{
-		endpoint: enpoint,
+		endpoint: endpoint,
 	}
 }
 
