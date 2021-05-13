@@ -1,6 +1,7 @@
 package bsc
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
@@ -43,6 +44,14 @@ func (wallet *Wallet) Import(raw []byte) (common.Address, error) {
 	return address, nil
 }
 
+func (wallet *Wallet) ImportHex(data string) (common.Address, error) {
+	raw, err := hex.DecodeString(data)
+	if err != nil {
+		return common.Address{}, errors.Wrap(err, "failed to decode string")
+	}
+	return wallet.Import(raw)
+}
+
 func (wallet *Wallet) extend(i uint64) error {
 	for uint64(len(wallet.keys)) < i {
 		child, err := wallet.master.ChildPrivate(uint32(len(wallet.keys)))
@@ -61,4 +70,11 @@ func (wallet *Wallet) extend(i uint64) error {
 	}
 
 	return nil
+}
+
+func (wallet *Wallet) Addresses(ctx context.Context) (result []common.Address) {
+	for addr := range wallet.keys {
+		result = append(result, addr)
+	}
+	return result
 }
