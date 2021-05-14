@@ -40,6 +40,12 @@ func NewHDWallet(hdPrivate string, n uint64) (*Wallet, error) {
 	return wallet, nil
 }
 
+func NewWallet() *Wallet {
+	return &Wallet{
+		keys: make(map[common.Address]ecdsa.PrivateKey),
+	}
+}
+
 func (wallet *Wallet) Import(raw []byte) (common.Address, error) {
 	priv, err := crypto.ToECDSA(raw)
 	if err != nil {
