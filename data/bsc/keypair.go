@@ -33,5 +33,5 @@ func (kp *KeyPair) Address() common.Address {
 
 func (kp *KeyPair) SignTx(tx *types.Transaction, chainID *big.Int,
 	) (*types.Transaction, error) {
-	return kp.wallet.SignTx(kp.Address(), tx, chainIDx)
+	return kp.wallet.SignTx(kp.Address(), tx, chainID)
 }
